@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sổ Phân liều — BED, EQD2 và chuyển đổi phác đồ | Nhóm 4, HCMUS</title>
+  <meta name="description" content="Công cụ tính Liều hiệu dụng sinh học (BED), EQD2, chuyển đổi phác đồ và bù gián đoạn điều trị cho seminar xạ trị giảm phân liều của Nhóm 4, Khoa Vật lý – Vật lý Kỹ thuật, HCMUS." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <a class="skip" href="#mod1">Tới phần tính toán</a>
+
+  <div class="print-head">
+    <p>Báo cáo seminar: Nghiên cứu xạ trị giảm phân liều và công cụ tính BED</p>
+    <p>Nhóm 4, Khoa Vật lý – Vật lý Kỹ thuật, HCMUS, 2026</p>
+  </div>
+
+  <header class="masthead">
+    <div class="wrap mast-row">
+      <p class="inst">Trường Đại học Khoa học Tự nhiên, Khoa Vật lý – Vật lý Kỹ thuật</p>
+      <p class="inst inst-end">Seminar Vật lý Y khoa, 2026</p>
+    </div>
+  </header>
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="wrap">
+      <div class="hero-head">
+        <h1 id="hero-title">Cùng một liều sinh học.<br />Một nửa số ngày.</h1>
+        <div class="hero-lede">
+          <p>Nhập phác đồ, đọc ra Liều hiệu dụng sinh học (BED), liều tương đương 2 Gy (EQD2) và mức độ an toàn cho mô lành.</p>
+          <p>Bốn module tính toán dựng theo báo cáo seminar về xạ trị giảm phân liều của Nhóm 4.</p>
+        </div>
+      </div>
+
+      <div class="exhibit">
+        <p class="exhibit-cap">Ví dụ mở đầu: ung thư tuyến tiền liệt, α/β mô bướu 1.5 Gy và α/β mô lành muộn 3 Gy. Mỗi khối là một lần chiếu, độ dài cả thanh là tổng liều vật lý; số bên phải là liều hiệu dụng sinh học của mô bướu. Số liệu theo Bảng 3.1 của báo cáo.</p>
+
+        <div class="strip-line strip-line--hero">
+          <div class="strip-meta">
+            <span class="strip-name">Phác đồ chuẩn</span>
+            <span class="strip-spec">39 lần × 2 Gy, 78 Gy, 53 ngày</span>
+          </div>
+          <div class="strip" role="img" aria-label="39 lần chiếu, mỗi lần 2 Gy, tổng 78 Gy, thanh dài nhất">
+            <div class="strip-bar is-normal hero-bar" style="width:100%; --n:39"></div>
+          </div>
+          <span class="strip-num">BED bướu 182.0 Gy</span>
+        </div>
+
+        <div class="strip-line strip-line--hero">
+          <div class="strip-meta">
+            <span class="strip-name">Giảm phân liều</span>
+            <span class="strip-spec">20 lần × 3 Gy, 60 Gy, 26 ngày</span>
+          </div>
+          <div class="strip" role="img" aria-label="20 lần chiếu, mỗi lần 3 Gy, tổng 60 Gy">
+            <div class="strip-bar is-tumor hero-bar" style="width:76.92%; --n:20"></div>
+          </div>
+          <span class="strip-num">BED bướu 180.0 Gy</span>
+        </div>
+
+        <dl class="exhibit-sum">
+          <div>
+            <dt>BED mô bướu</dt>
+            <dd>182.0 → 180.0 Gy</dd>
+          </div>
+          <div>
+            <dt>BED mô lành muộn</dt>
+            <dd>130.0 → 120.0 Gy</dd>
+          </div>
+          <div>
+            <dt>Thời gian điều trị</dt>
+            <dd>53 → 26 ngày</dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <nav class="rail" aria-label="Mục lục trang">
+    <div class="wrap rail-inner">
+      <div class="rail-links">
+        <a class="rail-link is-active" href="#mod1"><span class="rail-num">1</span>BED cơ bản</a>
+        <a class="rail-link" href="#mod2"><span class="rail-num">2</span>Tái sinh</a>
+        <a class="rail-link" href="#mod3"><span class="rail-num">3</span>Chuyển đổi</a>
+        <a class="rail-link" href="#mod4"><span class="rail-num">4</span>Bù gián đoạn</a>
+        <a class="rail-link" href="#compare"><span class="rail-num">5</span>Đối chiếu</a>
+      </div>
+      <div class="rail-actions no-print">
+        <button type="button" class="btn btn-quiet btn-sm" id="btn-print">In báo cáo</button>
+        <button type="button" class="btn btn-ink btn-sm" id="btn-export">Xuất CSV</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="wrap">
+    <!-- ===================== MODULE 1 ===================== -->
+    <section class="band" id="mod1" aria-labelledby="m1-title">
+      <div class="band-head">
+        <p class="band-label">Module 1</p>
+        <div class="band-title">
+          <h2 id="m1-title">BED cho mô bướu và mô lành</h2>
+          <div class="preset">
+            <label for="m1-preset">Phác đồ mẫu</label>
+            <select id="m1-preset">
+              <option value="">Tự nhập</option>
+              <option value="prostate_conv">Tuyến tiền liệt, chuẩn: 39 × 2 Gy</option>
+              <option value="prostate_chhip">Tuyến tiền liệt, CHHiP: 20 × 3 Gy</option>
+              <option value="prostate_paceb">Tuyến tiền liệt, PACE-B: 5 × 7.25 Gy</option>
+              <option value="breast_startb">Ung thư vú, START-B: 15 × 2.67 Gy</option>
+              <option value="breast_fast">Ung thư vú, FAST-Forward: 5 × 5.2 Gy</option>
+              <option value="lung_sbrt">Phổi NSCLC, RTOG 0236: 3 × 18 Gy</option>
+            </select>
+          </div>
+        </div>
+        <p class="lede">Không tính tái sinh. Nhập phác đồ, đọc BED và EQD2 của cả hai mô, kèm dải bất định khi tỷ số α/β chưa chắc chắn.</p>
+      </div>
+
+      <div class="band-body">
+        <form class="ledger" id="m1-form" autocomplete="off">
+          <p class="ledger-title">Thông số phác đồ</p>
+          <div class="field">
+            <label for="m1-n">Số lần chiếu</label>
+            <input type="number" id="m1-n" value="20" min="1" max="80" step="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="m1-d">Liều mỗi lần (Gy)</label>
+            <input type="number" id="m1-d" value="3.0" min="0.1" max="30" step="0.05" />
+          </div>
+          <div class="field">
+            <label for="m1-ab-tumor">α/β mô bướu (Gy)</label>
+            <input type="number" id="m1-ab-tumor" value="1.5" min="0.3" max="30" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="m1-ab-normal">α/β mô lành (Gy)</label>
+            <input type="number" id="m1-ab-normal" value="3.0" min="0.3" max="30" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="m1-alpha">α mô bướu (1/Gy)</label>
+            <input type="number" id="m1-alpha" value="0.15" min="0.01" max="2" step="0.01" />
+            <span class="hint">Dùng để vẽ đường cong sống sót.</span>
+          </div>
+          <div class="field">
+            <label for="m1-uncert">Bất định α/β (Gy)</label>
+            <input type="number" id="m1-uncert" value="0.5" min="0" max="5" step="0.1" />
+            <span class="hint">Dải ±Δ(α/β) trong đồ thị BED.</span>
+          </div>
+          <button type="button" class="btn btn-quiet btn-block no-print" id="m1-save">Thêm phác đồ vào bảng đối chiếu</button>
+
+          <details class="ref-table">
+            <summary>Bảng tra nhanh α/β</summary>
+            <table>
+              <thead>
+                <tr><th scope="col">Mô</th><th scope="col">α/β</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>Đầu cổ, phổi NSCLC, cổ tử cung</td><td>10.0 Gy</td></tr>
+                <tr><td>Ung thư vú</td><td>3.5 Gy</td></tr>
+                <tr><td>Ung thư tuyến tiền liệt</td><td>1.5 Gy</td></tr>
+                <tr><td>Mô lành muộn</td><td>3.0 Gy</td></tr>
+                <tr><td>Tủy sống, thần kinh thị giác</td><td>2.0 Gy</td></tr>
+              </tbody>
+            </table>
+          </details>
+        </form>
+
+        <div class="band-main">
+          <div class="readouts">
+            <div class="ro">
+              <span class="ro-label">Tổng liều vật lý</span>
+              <span class="ro-val" id="m1-D">60.00 <i>Gy</i></span>
+              <span class="ro-sub" id="m1-D-sub">20 lần × 3.00 Gy</span>
+            </div>
+            <div class="ro ro--key">
+              <span class="ro-label">BED mô bướu</span>
+              <span class="ro-val" id="m1-bedT">180.00 <i>Gy</i></span>
+              <span class="ro-sub" id="m1-bedT-sub">—</span>
+            </div>
+            <div class="ro">
+              <span class="ro-label">BED mô lành muộn</span>
+              <span class="ro-val" id="m1-bedN">120.00 <i>Gy</i></span>
+              <span class="ro-sub" id="m1-bedN-sub">—</span>
+            </div>
+            <div class="ro">
+              <span class="ro-label">Tỷ số bướu trên lành</span>
+              <span class="ro-val" id="m1-ratio">1.50</span>
+              <span class="ro-sub" id="m1-ratio-sub">—</span>
+            </div>
+          </div>
+
+          <p class="guardrail hidden" id="m1-guardrail" role="status"></p>
+
+          <div class="strip-block">
+            <p class="block-title">Hai cách đạt cùng liều hiệu dụng sinh học</p>
+            <div class="strip-line">
+              <div class="strip-meta">
+                <span class="strip-name">Phác đồ đang xét</span>
+                <span class="strip-spec" id="m1-strip-a-spec">20 × 3 Gy</span>
+              </div>
+              <div class="strip" id="m1-strip-a">
+                <div class="strip-bar is-tumor" style="width:100%"></div>
+              </div>
+              <span class="strip-num" id="m1-strip-a-num">180.0 Gy</span>
+            </div>
+            <div class="strip-line">
+              <div class="strip-meta">
+                <span class="strip-name">Chia 2 Gy mỗi lần</span>
+                <span class="strip-spec" id="m1-strip-b-spec">—</span>
+              </div>
+              <div class="strip" id="m1-strip-b">
+                <div class="strip-bar is-normal" style="width:0%"></div>
+              </div>
+              <span class="strip-num" id="m1-strip-b-num">—</span>
+            </div>
+            <p class="block-note" id="m1-strip-note"></p>
+          </div>
+
+          <figure class="chart">
+            <div class="chart-head">
+              <figcaption id="m1-chart-title">Đường cong sống sót tế bào</figcaption>
+              <div class="segmented no-print" role="group" aria-label="Chọn đồ thị module 1">
+                <button type="button" class="seg is-active" data-m1chart="survival">Sống sót tế bào</button>
+                <button type="button" class="seg" data-m1chart="bed">BED theo liều mỗi lần</button>
+              </div>
+            </div>
+            <canvas id="m1-chart" height="280" role="img" aria-label="Đồ thị module 1"></canvas>
+            <p class="chart-cap" id="m1-chart-cap"></p>
+          </figure>
+
+          <p class="note" id="m1-note"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== MODULE 2 ===================== -->
+    <section class="band" id="mod2" aria-labelledby="m2-title">
+      <div class="band-head">
+        <p class="band-label">Module 2</p>
+        <div class="band-title">
+          <h2 id="m2-title">BED khi thời gian điều trị bị kéo dài</h2>
+          <div class="preset">
+            <label for="m2-preset">Phác đồ mẫu</label>
+            <select id="m2-preset">
+              <option value="">Tự nhập</option>
+              <option value="hnscc_conv">Đầu cổ, đúng kế hoạch: 47 ngày</option>
+              <option value="hnscc_prolong">Đầu cổ, kéo dài: 60 ngày</option>
+              <option value="lung_hypo">Phổi, giảm phân liều vừa: 20 × 3 Gy</option>
+              <option value="lung_sbrt">Phổi, SBRT: 3 × 18 Gy</option>
+            </select>
+          </div>
+        </div>
+        <p class="lede">Có tính tái sinh. Từ ngày T<sub>k</sub>, tế bào bướu tăng sinh bù lại phần liều đã chiếu; module trừ đi phần BED mất đó.</p>
+      </div>
+
+      <div class="band-body">
+        <form class="ledger" id="m2-form" autocomplete="off">
+          <p class="ledger-title">Phác đồ và động học tái sinh</p>
+          <div class="field">
+            <label for="m2-n">Số lần chiếu</label>
+            <input type="number" id="m2-n" value="35" min="1" max="80" step="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="m2-d">Liều mỗi lần (Gy)</label>
+            <input type="number" id="m2-d" value="2.0" min="0.1" max="30" step="0.05" />
+          </div>
+          <div class="field">
+            <label for="m2-T">Tổng thời gian T (ngày)</label>
+            <input type="number" id="m2-T" value="47" min="1" max="200" step="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="m2-Tk">Thời gian trễ T<sub>k</sub> (ngày)</label>
+            <input type="number" id="m2-Tk" value="21" min="0" max="200" step="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="m2-ab-tumor">α/β mô bướu (Gy)</label>
+            <input type="number" id="m2-ab-tumor" value="10.0" min="0.3" max="30" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="m2-ab-normal">α/β mô lành (Gy)</label>
+            <input type="number" id="m2-ab-normal" value="3.0" min="0.3" max="30" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="m2-alpha">α mô bướu (1/Gy)</label>
+            <input type="number" id="m2-alpha" value="0.30" min="0.01" max="2" step="0.01" />
+          </div>
+          <div class="field">
+            <label for="m2-tpot">T<sub>pot</sub> (ngày)</label>
+            <input type="number" id="m2-tpot" value="4.0" min="0.5" max="60" step="0.1" />
+          </div>
+          <button type="button" class="btn btn-quiet btn-block no-print" id="m2-save">Thêm phác đồ vào bảng đối chiếu</button>
+        </form>
+
+        <div class="band-main">
+          <div class="readouts">
+            <div class="ro">
+              <span class="ro-label">Mất BED mỗi ngày, K</span>
+              <span class="ro-val" id="m2-K">0.578 <i>Gy/ngày</i></span>
+              <span class="ro-sub" id="m2-K-sub">—</span>
+            </div>
+            <div class="ro ro--warn">
+              <span class="ro-label">BED mất do tái sinh</span>
+              <span class="ro-val" id="m2-loss">15.02 <i>Gy</i></span>
+              <span class="ro-sub" id="m2-loss-sub">—</span>
+            </div>
+            <div class="ro ro--key">
+              <span class="ro-label">BED<sub>net</sub> mô bướu</span>
+              <span class="ro-val" id="m2-bedT">68.98 <i>Gy</i></span>
+              <span class="ro-sub" id="m2-bedT-sub">—</span>
+            </div>
+            <div class="ro">
+              <span class="ro-label">BED mô lành muộn</span>
+              <span class="ro-val" id="m2-bedN">116.67 <i>Gy</i></span>
+              <span class="ro-sub" id="m2-bedN-sub">—</span>
+            </div>
+          </div>
+
+          <p class="guardrail hidden" id="m2-guardrail" role="status"></p>
+
+          <figure class="chart">
+            <div class="chart-head">
+              <figcaption>BED hiệu dụng theo tổng thời gian điều trị</figcaption>
+            </div>
+            <canvas id="m2-chart" height="280" role="img" aria-label="Đồ thị BED hiệu dụng theo số ngày điều trị"></canvas>
+            <p class="chart-cap" id="m2-chart-cap"></p>
+          </figure>
+
+          <p class="note" id="m2-note"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== MODULE 3 ===================== -->
+    <section class="band" id="mod3" aria-labelledby="m3-title">
+      <div class="band-head">
+        <p class="band-label">Module 3</p>
+        <div class="band-title">
+          <h2 id="m3-title">Đổi phác đồ, giữ nguyên hiệu lực sinh học</h2>
+          <div class="preset">
+            <label for="m3-preset">Bài toán mẫu</label>
+            <select id="m3-preset">
+              <option value="">Tự nhập</option>
+              <option value="prostate_20">Tuyến tiền liệt: 78 Gy, 39 lần → 20 lần</option>
+              <option value="breast_15">Ung thư vú: 50 Gy, 25 lần → 15 lần</option>
+              <option value="brain_5">Di căn não: 30 Gy, 10 lần → 5 lần</option>
+            </select>
+          </div>
+        </div>
+        <p class="lede">Chọn mốc cần bảo toàn: mô bướu hay mô lành. Module giải ra số lần chiếu hoặc liều mỗi lần của phác đồ mới.</p>
+      </div>
+
+      <div class="band-body">
+        <form class="ledger" id="m3-form" autocomplete="off">
+          <p class="ledger-title">Phác đồ gốc</p>
+          <div class="field">
+            <label for="m3-n1">Số lần chiếu gốc</label>
+            <input type="number" id="m3-n1" value="39" min="1" max="80" step="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="m3-d1">Liều mỗi lần gốc (Gy)</label>
+            <input type="number" id="m3-d1" value="2.0" min="0.1" max="30" step="0.05" />
+          </div>
+          <div class="field">
+            <label for="m3-ab-tumor">α/β mô bướu (Gy)</label>
+            <input type="number" id="m3-ab-tumor" value="1.5" min="0.3" max="30" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="m3-ab-normal">α/β mô lành (Gy)</label>
+            <input type="number" id="m3-ab-normal" value="3.0" min="0.3" max="30" step="0.1" />
+          </div>
+
+          <p class="ledger-title ledger-title--spaced">Phác đồ mới</p>
+          <div class="field field--stack">
+            <label for="m3-match">Bảo toàn theo</label>
+            <select id="m3-match">
+              <option value="tumor">BED mô bướu</option>
+              <option value="normal">BED mô lành</option>
+            </select>
+          </div>
+          <div class="field field--stack">
+            <label for="m3-mode">Cho trước</label>
+            <select id="m3-mode">
+              <option value="given_n2">Số lần chiếu, tính liều mỗi lần</option>
+              <option value="given_d2">Liều mỗi lần, tính số lần chiếu</option>
+            </select>
+          </div>
+          <div class="field" id="m3-n2-field">
+            <label for="m3-n2">Số lần chiếu mới</label>
+            <input type="number" id="m3-n2" value="20" min="1" max="80" step="0.1" />
+          </div>
+          <div class="field hidden" id="m3-d2-field">
+            <label for="m3-d2">Liều mỗi lần mới (Gy)</label>
+            <input type="number" id="m3-d2" value="3.0" min="0.1" max="30" step="0.05" />
+          </div>
+
+          <label class="check">
+            <input type="checkbox" id="m3-repop" />
+            <span>Tính thêm tái sinh</span>
+          </label>
+          <div class="repop-fields hidden" id="m3-repop-fields">
+            <div class="field">
+              <label for="m3-T1">T gốc (ngày)</label>
+              <input type="number" id="m3-T1" value="53" min="1" max="200" step="1" />
+            </div>
+            <div class="field">
+              <label for="m3-T2">T mới (ngày)</label>
+              <input type="number" id="m3-T2" value="26" min="1" max="200" step="1" />
+            </div>
+            <div class="field">
+              <label for="m3-Tk">T<sub>k</sub> (ngày)</label>
+              <input type="number" id="m3-Tk" value="21" min="0" max="200" step="1" />
+            </div>
+            <div class="field">
+              <label for="m3-K">K (Gy/ngày)</label>
+              <input type="number" id="m3-K" value="0.60" min="0" max="3" step="0.05" />
+            </div>
+          </div>
+
+          <button type="button" class="btn btn-quiet btn-block no-print" id="m3-save">Thêm phác đồ mới vào bảng đối chiếu</button>
+        </form>
+
+        <div class="band-main">
+          <div class="readouts">
+            <div class="ro ro--key">
+              <span class="ro-label">Phác đồ mới</span>
+              <span class="ro-val" id="m3-new">20 × 3.02 <i>Gy</i></span>
+              <span class="ro-sub" id="m3-new-sub">—</span>
+            </div>
+            <div class="ro">
+              <span class="ro-label">Thay đổi tổng liều</span>
+              <span class="ro-val" id="m3-diff">−22.5%</span>
+              <span class="ro-sub" id="m3-diff-sub">—</span>
+            </div>
+            <div class="ro">
+              <span class="ro-label">BED mô bướu, gốc → mới</span>
+              <span class="ro-val" id="m3-bedT">182.0 <i>→</i> 182.0</span>
+              <span class="ro-sub" id="m3-bedT-sub">—</span>
+            </div>
+            <div class="ro">
+              <span class="ro-label">BED mô lành, gốc → mới</span>
+              <span class="ro-val" id="m3-bedN">130.0 <i>→</i> 121.3</span>
+              <span class="ro-sub" id="m3-bedN-sub">—</span>
+            </div>
+          </div>
+
+          <p class="guardrail hidden" id="m3-guardrail" role="status"></p>
+
+          <div class="strip-block">
+            <p class="block-title">Phân bố liều trước và sau khi chuyển đổi</p>
+            <div class="strip-line">
+              <div class="strip-meta">
+                <span class="strip-name">Phác đồ gốc</span>
+                <span class="strip-spec" id="m3-strip-a-spec">39 × 2 Gy</span>
+              </div>
+              <div class="strip" id="m3-strip-a">
+                <div class="strip-bar is-normal" style="width:100%"></div>
+              </div>
+              <span class="strip-num" id="m3-strip-a-num">78.0 Gy</span>
+            </div>
+            <div class="strip-line">
+              <div class="strip-meta">
+                <span class="strip-name">Phác đồ mới</span>
+                <span class="strip-spec" id="m3-strip-b-spec">20 × 3.02 Gy</span>
+              </div>
+              <div class="strip" id="m3-strip-b">
+                <div class="strip-bar is-tumor" style="width:0%"></div>
+              </div>
+              <span class="strip-num" id="m3-strip-b-num">60.4 Gy</span>
+            </div>
+          </div>
+
+          <div class="barcmp">
+            <div class="barcmp-head">
+              <p class="block-title">Cùng một trục BED, hai mô</p>
+              <p class="barcmp-legend"><span class="dot dot--normal"></span>Phác đồ gốc <span class="dot dot--tumor"></span>Phác đồ mới</p>
+            </div>
+            <div class="barcmp-row">
+              <span class="barcmp-label">BED bướu</span>
+              <div class="barcmp-track"><i class="is-normal" id="m3-bar-tumor-old"></i></div>
+              <span class="barcmp-val" id="m3-bar-tumor-old-v">182.0</span>
+            </div>
+            <div class="barcmp-row">
+              <span class="barcmp-label"></span>
+              <div class="barcmp-track"><i class="is-tumor" id="m3-bar-tumor-new"></i></div>
+              <span class="barcmp-val" id="m3-bar-tumor-new-v">182.0</span>
+            </div>
+            <div class="barcmp-row">
+              <span class="barcmp-label">BED lành</span>
+              <div class="barcmp-track"><i class="is-normal" id="m3-bar-normal-old"></i></div>
+              <span class="barcmp-val" id="m3-bar-normal-old-v">130.0</span>
+            </div>
+            <div class="barcmp-row">
+              <span class="barcmp-label"></span>
+              <div class="barcmp-track"><i class="is-tumor" id="m3-bar-normal-new"></i></div>
+              <span class="barcmp-val" id="m3-bar-normal-new-v">121.3</span>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="tbl tbl--compact">
+              <caption class="tbl-cap">Dosimetry của hai phác đồ</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Thông số</th>
+                  <th scope="col">Gốc</th>
+                  <th scope="col">Mới</th>
+                  <th scope="col">Chênh lệch</th>
+                </tr>
+              </thead>
+              <tbody id="m3-table"></tbody>
+            </table>
+          </div>
+
+          <p class="note" id="m3-note"></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== MODULE 4 ===================== -->
+    <section class="band" id="mod4" aria-labelledby="m4-title">
+      <div class="band-head">
+        <p class="band-label">Module 4</p>
+        <div class="band-title">
+          <h2 id="m4-title">Bù liều khi phác đồ bị ngắt</h2>
+          <div class="preset">
+            <label for="m4-preset">Tình huống mẫu</label>
+            <select id="m4-preset">
+              <option value="">Tự nhập</option>
+              <option value="hnscc_gap7">Đầu cổ 70 Gy, nghỉ 7 ngày sau 15 lần</option>
+              <option value="pelvis_gap5">Vùng chậu 50 Gy, nghỉ 5 ngày sau 10 lần</option>
+              <option value="hypo_gap4">Giảm phân liều 60 Gy, nghỉ 4 ngày sau 10 lần</option>
+            </select>
+          </div>
+        </div>
+        <p class="lede">Mỗi ngày kéo dài thêm làm mất một phần BED của mô bướu. Module nêu ba cách bù và mức tăng liều mô lành của từng cách.</p>
+      </div>
+
+      <div class="band-body">
+        <form class="ledger" id="m4-form" autocomplete="off">
+          <p class="ledger-title">Kế hoạch ban đầu</p>
+          <div class="field">
+            <label for="m4-nplan">Số lần chiếu kế hoạch</label>
+            <input type="number" id="m4-nplan" value="35" min="2" max="80" step="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="m4-dplan">Liều mỗi lần (Gy)</label>
+            <input type="number" id="m4-dplan" value="2.0" min="0.1" max="30" step="0.05" />
+          </div>
+          <div class="field">
+            <label for="m4-ndone">Đã chiếu (lần)</label>
+            <input type="number" id="m4-ndone" value="15" min="0" max="79" step="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="m4-gap">Số ngày gián đoạn</label>
+            <input type="number" id="m4-gap" value="7" min="0" max="90" step="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="m4-Tplan">Thời gian kế hoạch (ngày)</label>
+            <input type="number" id="m4-Tplan" value="47" min="1" max="200" step="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="m4-Tk">T<sub>k</sub> (ngày)</label>
+            <input type="number" id="m4-Tk" value="21" min="0" max="200" step="1" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="m4-ab-tumor">α/β mô bướu (Gy)</label>
+            <input type="number" id="m4-ab-tumor" value="10.0" min="0.3" max="30" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="m4-ab-normal">α/β mô lành (Gy)</label>
+            <input type="number" id="m4-ab-normal" value="3.0" min="0.3" max="30" step="0.1" />
+          </div>
+          <div class="field">
+            <label for="m4-K">K, mất BED mỗi ngày</label>
+            <input type="number" id="m4-K" value="0.60" min="0" max="3" step="0.05" />
+          </div>
+        </form>
+
+        <div class="band-main">
+          <div class="readouts">
+            <div class="ro">
+              <span class="ro-label">Số lần chiếu còn lại</span>
+              <span class="ro-val" id="m4-nrem">20 <i>lần</i></span>
+              <span class="ro-sub" id="m4-nrem-sub">—</span>
+            </div>
+            <div class="ro ro--warn">
+              <span class="ro-label">BED mô bướu mất thêm</span>
+              <span class="ro-val" id="m4-loss">4.20 <i>Gy</i></span>
+              <span class="ro-sub" id="m4-loss-sub">—</span>
+            </div>
+          </div>
+
+          <p class="guardrail hidden" id="m4-guardrail" role="status"></p>
+
+          <div class="timeline" aria-hidden="true">
+            <div class="tl-row">
+              <span class="tl-tag">Kế hoạch</span>
+              <div class="tl-track">
+                <div class="tl-fill is-normal" id="m4-tl-plan"></div>
+              </div>
+              <span class="tl-num" id="m4-tl-plan-num">47 ngày</span>
+            </div>
+            <div class="tl-row">
+              <span class="tl-tag">Thực tế</span>
+              <div class="tl-track">
+                <div class="tl-fill is-tumor" id="m4-tl-real-a" style="left:0"></div>
+                <div class="tl-gap" id="m4-tl-gap"></div>
+                <div class="tl-fill is-tumor" id="m4-tl-real-b"></div>
+              </div>
+              <span class="tl-num" id="m4-tl-real-num">54 ngày</span>
+            </div>
+            <p class="block-note" id="m4-timeline-note"></p>
+          </div>
+
+          <div class="options" id="m4-options"></div>
+
+          <div class="note note--source">
+            <p><strong>Khoảng cách giữa hai lần chiếu trong ngày.</strong> Khi chiếu hai lần mỗi ngày, hai lần phải cách nhau ít nhất 6 giờ để mô lành sửa chữa hết tổn thương cận gây chết (RCR, 2019).</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== COMPARISON ===================== -->
+    <section class="band band--compare" id="compare" aria-labelledby="cmp-title">
+      <div class="band-head">
+        <p class="band-label">Đối chiếu</p>
+        <h2 id="cmp-title">Bảng phác đồ</h2>
+        <p class="lede">Bảy phác đồ trong báo cáo đã có sẵn để đối chiếu. Thêm phác đồ của bạn từ các module, rồi xuất CSV hoặc in cả trang.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table class="tbl">
+          <caption class="sr-only">So sánh BED và EQD2 của các phác đồ đã lưu</caption>
+          <thead>
+            <tr>
+              <th scope="col">Phác đồ</th>
+              <th scope="col">n × d</th>
+              <th scope="col">Tổng liều</th>
+              <th scope="col">BED bướu</th>
+              <th scope="col">BED mô lành</th>
+              <th scope="col">Ghi chú</th>
+              <th scope="col" class="no-print"><span class="sr-only">Bỏ khỏi bảng</span></th>
+            </tr>
+          </thead>
+          <tbody id="cmp-body"></tbody>
+        </table>
+      </div>
+      <p class="table-note">BED tính theo α/β riêng của từng mô; số trong ngoặc là EQD2. BED mô lành dùng α/β = 3.0 Gy.</p>
+      <div class="table-actions no-print">
+        <button type="button" class="btn btn-quiet btn-sm" id="btn-reset">Đưa bảng về dữ liệu báo cáo</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div>
+          <p class="footer-title">Giới hạn của mô hình</p>
+          <p>Trang dùng mô hình tuyến tính – toàn phương (LQ). Với liều mỗi lần trên 8–10 Gy, LQ đánh giá quá cao hiệu quả diệt tế bào; khi đó cần đối chiếu USC hoặc LQL và tuân thủ AAPM TG-101. Công cụ dùng cho học tập, không thay thế tính toán lâm sàng.</p>
+        </div>
+        <div>
+          <p class="footer-title">Tài liệu tham khảo</p>
+          <ol class="refs">
+            <li>Fowler, J. F. (1989). The linear-quadratic formula and progress in fractionated radiotherapy. <em>Br. J. Radiol.</em> 62, 679–694.</li>
+            <li>Joiner, M. C., van der Kogel, A. J. (2018). <em>Basic Clinical Radiobiology</em>, 5th ed.</li>
+            <li>RCR (2019). <em>The timely delivery of radical radiotherapy</em>, 4th ed.</li>
+            <li>Benedict, S. H. et al. (2010). AAPM Task Group 101. <em>Med. Phys.</em> 37, 4078–4101.</li>
+            <li>Dearnaley, D. et al. (2016). CHHiP trial. <em>Lancet Oncol.</em> 17, 1047–1060.</li>
+            <li>START Trialists' Group (2008). START-B. <em>Lancet</em> 371, 1098–1107.</li>
+            <li>Brunt, A. M. et al. (2020). FAST-Forward. <em>Lancet</em> 395, 1613–1626.</li>
+          </ol>
+        </div>
+      </div>
+      <p class="footer-credit">Nhóm 4, Khoa Vật lý – Vật lý Kỹ thuật, Trường Đại học Khoa học Tự nhiên, Đại học Quốc gia TP.HCM. Seminar Vật lý Y khoa, 2026.</p>
+    </div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
